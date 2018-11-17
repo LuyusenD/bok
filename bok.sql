@@ -33,7 +33,7 @@ CREATE TABLE bok_user (
   articleCount INT DEFAULT 0                           /*发表文章数量*/
  );
 
-INSERT INTO bok_user VALUES (NULL, 'admin', 'admin', '88888@admin.com', '88888888888', '管理权最大者', 'box社区', '2018-11-17', NULL, '0');
+INSERT INTO bok_user VALUES (NULL, 'admin', 'admin', '88888@admin.com', '88888888888','VIP18','管理权最大者', 'box社区', '2018-11-17', NULL, '0');
 
 
  /*文章 评论信息*/
