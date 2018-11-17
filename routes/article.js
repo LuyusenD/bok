@@ -18,9 +18,9 @@ router.post('/add',(req,res)=>{
     })
 })
 
-router.post('/del',(req,res)=>{
+router.get('/del',(req,res)=>{
     var sql = `UPDATE bok_article SET isDel = 1 WHERE id = ?`;
-    var id = req.body.id;
+    var id = req.query.id;
     pool.query(sql,[id],(err,result)=>{
         result.affectedRows>0?res.send({'code':'200','msg':'del success'}):res.send({'code':'404','msg':'del err'})
     })
@@ -34,5 +34,12 @@ router.post('/updata',(req,res)=>{
     })
 })
 
+router.get('/getarticle',(req,res)=>{
+   var id=req.query.id 
+   var sql = `Select * From bok_article Where id=? and `
+	pool.query(sql,[id],(err,result)=>{
+        result.isDel!=1 ?  res.send(result):res.send({'code':'404','msg':"error"})  
+   })
+})
 
 module.exports = router
