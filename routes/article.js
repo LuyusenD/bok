@@ -39,7 +39,8 @@ router.get('/getarticle',(req,res)=>{
    var id=req.query.id 
    var sql = `Select * From bok_article Where id=?  `
 	pool.query(sql,[id],(err,result)=>{
-        result.isDel!=1 ?  res.send(result):res.send({'code':'404','msg':"error"})  
+	   console.log(result[0].isDel)
+        result[0].isDel!=1 ?  res.send(result):res.send({'code':'404','msg':"error"})  
    })
 })
 
