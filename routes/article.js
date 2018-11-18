@@ -10,10 +10,11 @@ router.get('/getAll',(req,res)=>{
     })
 })
 
-router.get('/add',(req,res)=>{
+router.post('/add',(req,res)=>{
     var sql = `INSERT INTO bok_article VALUES (NULL, ?, ?, ?,0,?, ?, ?, 0);`;
     var data = new Date().toLocaleString()
-    var {title,content,likes,comment,upuser} = req.body
+    var {title,content,upuser} = req.body
+    var likes=0,comment=0
     pool.query(sql,[title,content,likes,comment,data,upuser],(err,result)=>{
         result.affectedRows>0?res.send({'code':'200','msg':'add success'}):res.send({'code':'404','msg':'del err'})
     })
