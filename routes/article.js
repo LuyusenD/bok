@@ -4,15 +4,16 @@ const pool = require('../pool.js');
 const qs = require('qs')
 
 router.get('/getAll',(req,res)=>{
-    var sql = `SELECT * FROM bok_article WHERE isDel != 1 `;
+    var sql = `SELECT a.id,a.title,a.likes,a.comment,a.data,a.upuser,b.vip,b.userIco FROM bok_article a,bok_user b WHERE a.upuser = b.username AND a.isDel!=1`;
     pool.query(sql,(err,result)=>{
         res.send(result)
     })
 })
 
-router.post('/add',(req,res)=>{
+router.get('/add',(req,res)=>{
     var sql = `INSERT INTO bok_article VALUES (NULL, ?, ?, ?,0,?, ?, ?, 0);`;
-    var {title,content,likes,comment,data,upuser} = req.body
+    var data = new Date().toLocaleString()
+    var {title,content,likes,comment,upuser} = req.body
     pool.query(sql,[title,content,likes,comment,data,upuser],(err,result)=>{
         result.affectedRows>0?res.send({'code':'200','msg':'add success'}):res.send({'code':'404','msg':'del err'})
     })
@@ -35,14 +36,30 @@ router.post('/updata',(req,res)=>{
 })
 
 router.get('/getarticle',(req,res)=>{
+    var ID = req.query.id 
+    var obj = {}
+    var p = new Promise(function(open){
+        var sql = `Select * From bok_article Where id=?`
+        pool.query(sql,[ID],(err,result)=>{
+            result.isDel!=1 ? obj['msg']=result[0]:res.send({'code':'404','msg':"error"}) 
+            open(result[0].upuser)
+        })
+    })
+    .then(function(msg){
+        var sql = `SELECT username,vip,userIco FROM bok_user WHERE username = ?`
+        pool.query(sql,[msg],(err,result)=>{
+            obj['user']=result[0]
+        })
+    })
+    .then(function(){
+        var sql = `select a.cid,a.id,a.uid,a.date,a.content,b.username,b.userIco,b.vip from bok_comment a,bok_user b WHERE a.uid=b.uid AND a.id= ?`
+        pool.query(sql,[ID],(err,result)=>{
+            obj['comment']=result
+            res.send(obj)
+        })
+    })
+ })
 
-   var id=req.query.id 
-   var sql = `Select * From bok_article Where id=?  `
-	pool.query(sql,[id],(err,result)=>{
-	   console.log(result[0].isDel)
-        result[0].isDel!=1 ?  res.send(result):res.send({'code':'404','msg':"error"})  
-   })
-})
 
 
 module.exports = router

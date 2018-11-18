@@ -4,6 +4,7 @@ const cors = require('cors')
 
 const article = require('./routes/article.js');
 const user = require('./routes/user.js');
+const comment = require('./routes/comment.js');
 
 const app = express()
 
@@ -15,3 +16,4 @@ app.use(bodyParser.urlencoded({
 app.listen(3000)
 app.use('/article',article);
 app.use('/user',user);
+app.use('/comment',comment);
