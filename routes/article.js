@@ -3,13 +3,14 @@ const router = express.Router();
 const pool = require('../pool.js');
 const qs = require('qs')
 
+// 获取所有文章
 router.get('/getAll',(req,res)=>{
     var sql = `SELECT a.id,a.title,a.likes,a.comment,a.data,a.upuser,b.vip,b.userIco FROM bok_article a,bok_user b WHERE a.upuser = b.username AND a.isDel!=1`;
     pool.query(sql,(err,result)=>{
         res.send(result)
     })
 })
-
+// 添加文章
 router.post('/add',(req,res)=>{
     var sql = `INSERT INTO bok_article VALUES (NULL, ?, ?, ?,0,?, ?, ?, 0);`;
     var data = new Date().toLocaleString()
@@ -19,7 +20,7 @@ router.post('/add',(req,res)=>{
         result.affectedRows>0?res.send({'code':'200','msg':'add success'}):res.send({'code':'404','msg':'del err'})
     })
 })
-
+// 删除文章
 router.get('/del',(req,res)=>{
     var sql = `UPDATE bok_article SET isDel = 1 WHERE id = ?`;
     var id = req.query.id;
@@ -27,7 +28,7 @@ router.get('/del',(req,res)=>{
         result.affectedRows>0?res.send({'code':'200','msg':'del success'}):res.send({'code':'404','msg':'del err'})
     })
 })
-
+// 修改文章
 router.post('/updata',(req,res)=>{
     var sql = `UPDATE bok_article SET title=?,content=? WHERE id = ?`;
     var {title,content,id} = req.body
@@ -35,7 +36,7 @@ router.post('/updata',(req,res)=>{
         result.affectedRows>0?res.send({'code':'200','msg':'add success'}):res.send({'code':'404','msg':'del err'})
     })
 })
-
+// 获取文章详情
 router.get('/getarticle',(req,res)=>{
     var ID = req.query.id 
     var obj = {}
@@ -60,7 +61,26 @@ router.get('/getarticle',(req,res)=>{
         })
     })
  })
+// 浏览+1
+router.post('/browseone',(req,res)=>{
+    var ID = req.body.id;
 
+    var p = new Promise(function(open){
+        var sql = `Select browse From bok_article WHERE id=?`
+        pool.query(sql,[ID],(err,result)=>{
+            console.log(result[0].browse)
+           open(result[0].browse)
+        })
+    })
+    .then(function(msg){
+        var sql = `UPDATE bok_article SET browse=? WHERE id=?`
+        msg = parseInt(msg)+1;
+        pool.query(sql,[msg,ID],(err,result)=>{
+            
+        })
+    })
+    
+ })
 
 
 module.exports = router
