@@ -51,7 +51,7 @@ router.get('/getarticle',(req,res)=>{
         })
     })
     .then(function(){
-        var sql = `SELECT a.cid,a.id,a.uid,a.date,a.content FROM bok_comment a WHERE a.id=?`
+        var sql = `select a.cid,a.id,a.uid,a.date,a.content,b.username,b.userIco,b.vip from bok_comment a,bok_user b WHERE a.uid=b.uid AND a.id= ?`
         pool.query(sql,[ID],(err,result)=>{
             obj['comment']=result
             res.send(obj)
