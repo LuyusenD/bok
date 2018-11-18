@@ -28,7 +28,7 @@ router.get('/del',(req,res)=>{
 
 router.post('/updata',(req,res)=>{
     var sql = `UPDATE bok_article SET title=?,content=? WHERE id = ?`;
-    var {title,content,id} = req.query
+    var {title,content,id} = req.body
     pool.query(sql,[title,content,id],(err,result)=>{
         result.affectedRows>0?res.send({'code':'200','msg':'add success'}):res.send({'code':'404','msg':'del err'})
     })
