@@ -48,3 +48,7 @@ CREATE TABLE bok_comment (
 );
 
 
+
+-- SELECT * FROM bok_user WHERE uid = (select uid FROM bok_comment WHERE id = 1)
+
+-- select a.cid,a.id,a.uid,a.date,a.content,b.username,b.userIco,b.vip from bok_comment a join bok_user b on a.uid=b.uid

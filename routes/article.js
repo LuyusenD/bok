@@ -4,7 +4,7 @@ const pool = require('../pool.js');
 const qs = require('qs')
 
 router.get('/getAll',(req,res)=>{
-    var sql = `SELECT * FROM bok_article WHERE isDel != 1 `;
+    var sql = `SELECT a.id,a.title,a.likes,a.comment,a.data,a.upuser,b.vip,b.userIco FROM bok_article a,bok_user b WHERE a.upuser = b.username AND a.isDel!=1`;
     pool.query(sql,(err,result)=>{
         res.send(result)
     })
@@ -35,14 +35,30 @@ router.post('/updata',(req,res)=>{
 })
 
 router.get('/getarticle',(req,res)=>{
+    var ID = req.query.id 
+    var obj = {}
+    var p = new Promise(function(open){
+        var sql = `Select * From bok_article Where id=?`
+        pool.query(sql,[ID],(err,result)=>{
+            result.isDel!=1 ? obj['msg']=result[0]:res.send({'code':'404','msg':"error"}) 
+            open(result[0].upuser)
+        })
+    })
+    .then(function(msg){
+        var sql = `SELECT username,vip,userIco FROM bok_user WHERE username = ?`
+        pool.query(sql,[msg],(err,result)=>{
+            obj['user']=result[0]
+        })
+    })
+    .then(function(){
+        var sql = `SELECT a.cid,a.id,a.uid,a.date,a.content FROM bok_comment a WHERE a.id=?`
+        pool.query(sql,[ID],(err,result)=>{
+            obj['comment']=result
+            res.send(obj)
+        })
+    })
+ })
 
-   var id=req.query.id 
-   var sql = `Select * From bok_article Where id=?  `
-	pool.query(sql,[id],(err,result)=>{
-	   console.log(result[0].isDel)
-        result[0].isDel!=1 ?  res.send(result):res.send({'code':'404','msg':"error"})  
-   })
-})
 
 
 module.exports = router
